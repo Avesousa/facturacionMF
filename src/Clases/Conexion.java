@@ -9,6 +9,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -23,8 +26,11 @@ public class Conexion {
     public ResultSet resultado;
     public String nombreApellido;
     public String usuario;
+    public int id_usuario;
+    public int id_cliente;
     public int cargo;
     private PreparedStatement ps;
+    private CalculosMatematicos calcular = new CalculosMatematicos();
     public Conexion() {
         System.out.println("comenzo en el constructor");
         this.conectador = establecerConexion();
@@ -52,7 +58,8 @@ public class Conexion {
                this.nombreApellido = (resultado.getString("nombre") + " " + resultado.getString("apellido"));
                this.cargo = resultado.getInt("id_cargo");
                this.usuario = resultado.getString("usuario");
-               new Sistema(this.usuario,this.nombreApellido,this.cargo).setVisible(true);
+               this.id_usuario = resultado.getInt("id_usuario");
+               new Sistema(this.usuario,this.nombreApellido,this.cargo,this.id_usuario).setVisible(true);
                v.dispose();
                JOptionPane.showMessageDialog(null, "¡Bienvenid@! " + resultado.getString("nombre") + " " + resultado.getString("apellido"));
                
@@ -86,7 +93,7 @@ public class Conexion {
         catch(Exception e){
             System.out.println(e);
         }finally{
-            //cerrarConexion();
+            cerrarConexion();
         }
         
     }
@@ -109,7 +116,7 @@ public class Conexion {
        catch(Exception e){
            System.out.println(e);
        }finally{
-           //cerrarConexion();
+           cerrarConexion();
        } 
     }
     public void crear_clientes(Formulario_cliente v, Facturar_admin vf, Buscador_cliente vb){
@@ -131,12 +138,40 @@ public class Conexion {
             } else {
                 JOptionPane.showMessageDialog(null, "El cliente que intentas agregar, ¡Ya existe!");
             }
-            
         }catch(Exception e){
             System.out.println(e);
         }finally{
-           //cerrarConexion();
+           cerrarConexion();
        } 
+    }
+    public void seleccionar_cliente(int documento, Facturar_admin v, DefaultTableModel t){
+        System.out.println("Acá estoy");
+        try {
+            String sql = "SELECT * FROM clientes WHERE documento_cliente="+documento;
+            this.ps = this.conectador.prepareStatement(sql);
+            this.resultado = this.ps.executeQuery();
+            System.out.println("Comenzo a buscar usuario por dni");
+            if(this.resultado.next()){
+                System.out.println("Entro en next");
+                String razon = this.resultado.getString("razonsocial");
+                String direccion_cliente = this.resultado.getString("direccion_cliente");
+                int documento_cliente = Integer.parseInt(this.resultado.getString("documento_cliente"));
+                int telefono_cliente = Integer.parseInt(this.resultado.getString("telefono_cliente"));
+                int id_cliente = Integer.parseInt(this.resultado.getString("id_cliente"));
+                Cliente c = new Cliente(
+                        razon,
+                        direccion_cliente,
+                        documento_cliente,
+                        telefono_cliente,
+                        id_cliente,
+                        v,t);
+            }
+            
+        } catch (Exception e) {
+            System.out.println(e);
+        } finally{
+            cerrarConexion();
+        }
     }
     private boolean verificarClientes(int d){
         try{
@@ -148,7 +183,7 @@ public class Conexion {
             System.out.println(e);
             return false;
         }finally{
-           //cerrarConexion();
+           cerrarConexion();
        } 
     }
     private void cerrarConexion(){
@@ -194,4 +229,46 @@ public class Conexion {
         }
         return 0;
     }
+    public void enviarDetalle(DefaultTableModel t, Usuario u, Cliente c, Facturar_admin v){
+        try {
+            id_usuario = u.getId_usuario();
+            id_cliente = c.id_cliente;
+            String sql = "INSERT INTO detalleventa values (null,?,?,?,?,?,?,?,?)";
+            this.ps = this.conectador.prepareStatement(sql);
+            int cantFilas = t.getRowCount();
+            int id_factura = enviarFactura(v);
+            for(int i = 0; i<cantFilas; i++){
+                int cod = Integer.parseInt(t.getValueAt(i, 0).toString());
+                double costo = calcular.sacarCosto(cod);
+                double precio =Double.parseDouble(t.getValueAt(i, 3).toString());
+                double precioTotal = Double.parseDouble(v.total_facturar.getText());
+                int markup = calcular.sacarMakup(precio, costo);
+                double rentabilidad = calcular.sacarRentabilidad(precio, precioTotal);
+                this.ps.setInt(1,id_factura);
+                this.ps.setInt(2, cod);
+                this.ps.setInt(3, Integer.parseInt(String.valueOf(precio)));
+                this.ps.setInt(4, Integer.parseInt(t.getValueAt(i, 1).toString()));
+                this.ps.setInt(5, markup);
+                this.ps.setInt(6,Integer.parseInt(String.valueOf(rentabilidad)));
+                this.ps.addBatch();
+            }
+            this.ps.executeBatch();
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    private int enviarFactura(Facturar_admin v) throws SQLException{
+            Date hoy = new Date();
+            DateFormat formato = new SimpleDateFormat("yyyy/mm/dd HH:mm:ss");
+            String fecha = formato.format(hoy);
+            String sql = "'INSER INT factura values (null,"+
+                    Integer.parseInt(v.total_facturar.getText())+
+                    ","+fecha+","+id_usuario+","+id_cliente+")'";
+            this.ps = this.conectador.prepareStatement(sql);
+            this.ps.executeUpdate();
+            this.resultado = this.ps.getGeneratedKeys(); 
+            return this.resultado.getInt(1);
+    }
+    
 }

@@ -8,9 +8,9 @@ import java.awt.Toolkit;
 
 public class Sistema extends javax.swing.JFrame {
     Usuario user;
-    public Sistema(String u, String na, int c) {
+    public Sistema(String u, String na, int c, int id) {
         initComponents();
-        user = new Usuario(u,na,c);
+        user = new Usuario(u,na,c,id);
         cambiarDatos(c);
         this.setLocationRelativeTo(null);
     }
@@ -25,12 +25,8 @@ public class Sistema extends javax.swing.JFrame {
         facturas_sistema = new javax.swing.JMenu();
         facturarAdmin_facturas_sistema = new javax.swing.JMenuItem();
         devolver_facturas_sistema = new javax.swing.JMenuItem();
-        facturar_facturas_sistema1 = new javax.swing.JMenuItem();
         producto_sistema = new javax.swing.JMenu();
         lista_producto_sistema = new javax.swing.JMenuItem();
-        agregar_producto_sistema = new javax.swing.JMenuItem();
-        modificar_producto_sistema = new javax.swing.JMenuItem();
-        eliminar_producto_sistema = new javax.swing.JMenuItem();
         usuario_sistema = new javax.swing.JMenu();
         crear_usuario_sistema = new javax.swing.JMenuItem();
         modificar_usuario_sistema = new javax.swing.JMenuItem();
@@ -83,10 +79,6 @@ public class Sistema extends javax.swing.JFrame {
         devolver_facturas_sistema.setText("Devolución");
         facturas_sistema.add(devolver_facturas_sistema);
 
-        facturar_facturas_sistema1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
-        facturar_facturas_sistema1.setText("Facturar");
-        facturas_sistema.add(facturar_facturas_sistema1);
-
         menu_sistema.add(facturas_sistema);
 
         producto_sistema.setForeground(new java.awt.Color(255, 255, 255));
@@ -96,18 +88,6 @@ public class Sistema extends javax.swing.JFrame {
         lista_producto_sistema.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L, java.awt.event.InputEvent.CTRL_MASK));
         lista_producto_sistema.setText("Listas de Productos");
         producto_sistema.add(lista_producto_sistema);
-
-        agregar_producto_sistema.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        agregar_producto_sistema.setText("Agregar Producto");
-        producto_sistema.add(agregar_producto_sistema);
-
-        modificar_producto_sistema.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        modificar_producto_sistema.setText("Modificar Producto");
-        producto_sistema.add(modificar_producto_sistema);
-
-        eliminar_producto_sistema.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        eliminar_producto_sistema.setText("Eliminar Producto");
-        producto_sistema.add(eliminar_producto_sistema);
 
         menu_sistema.add(producto_sistema);
 
@@ -150,9 +130,9 @@ public class Sistema extends javax.swing.JFrame {
         switch (c){
             case 2: 
                 this.devolver_facturas_sistema.setVisible(false);
-                this.agregar_producto_sistema.setVisible(false);
-                this.modificar_producto_sistema.setVisible(false);
-                this.eliminar_producto_sistema.setVisible(false);
+                //this.agregar_producto_sistema.setVisible(false);
+                //this.modificar_producto_sistema.setVisible(false);
+                //this.eliminar_producto_sistema.setVisible(false);
                 this.reporte_sistema.setVisible(false);
                 this.crear_usuario_sistema.setVisible(false);
                 this.modificar_usuario_sistema.setVisible(false);
@@ -161,9 +141,9 @@ public class Sistema extends javax.swing.JFrame {
             case 3:
                 break;
             default:
-                this.agregar_producto_sistema.setVisible(false);
-                this.modificar_producto_sistema.setVisible(false);
-                this.eliminar_producto_sistema.setVisible(false);
+                //this.agregar_producto_sistema.setVisible(false);
+                //this.modificar_producto_sistema.setVisible(false);
+                //this.eliminar_producto_sistema.setVisible(false);
                 this.reporte_sistema.setVisible(false);
                 this.facturas_sistema.setVisible(false);
                 this.crear_usuario_sistema.setVisible(false);
@@ -182,19 +162,15 @@ public class Sistema extends javax.swing.JFrame {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem accion_no_disponible;
-    private javax.swing.JMenuItem agregar_producto_sistema;
     private javax.swing.JMenu archivo_sistema;
     private javax.swing.JMenuItem clave_usuario_sistema;
     private javax.swing.JMenuItem crear_usuario_sistema;
     private javax.swing.JMenuItem devolver_facturas_sistema;
-    private javax.swing.JMenuItem eliminar_producto_sistema;
     private javax.swing.JMenuItem facturarAdmin_facturas_sistema;
-    private javax.swing.JMenuItem facturar_facturas_sistema1;
     private javax.swing.JMenu facturas_sistema;
     private javax.swing.JLabel fondo;
     private javax.swing.JMenuItem lista_producto_sistema;
     private javax.swing.JMenuBar menu_sistema;
-    private javax.swing.JMenuItem modificar_producto_sistema;
     private javax.swing.JMenuItem modificar_usuario_sistema;
     private javax.swing.JMenu producto_sistema;
     private javax.swing.JMenu reporte_sistema;

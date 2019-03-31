@@ -2,6 +2,7 @@
 package Ventanas.ventanasEstaticas;
 
 import Clases.*;
+import com.sun.glass.events.KeyEvent;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -9,6 +10,7 @@ public class Precio_confirmacion extends javax.swing.JDialog {
     Usuario u;
     Facturar_admin vf;
     Buscador_producto vpro;
+    CalculosMatematicos calcular = new CalculosMatematicos();
     public Precio_confirmacion(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -19,6 +21,7 @@ public class Precio_confirmacion extends javax.swing.JDialog {
         u = user;
         vf = ven;
         vpro = venPro;
+        this.und.requestFocus();
     }
     public double costo;
     public int codigo;
@@ -45,6 +48,7 @@ public class Precio_confirmacion extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel2.setPreferredSize(new java.awt.Dimension(680, 370));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/logo-peq.png"))); // NOI18N
@@ -56,6 +60,11 @@ public class Precio_confirmacion extends javax.swing.JDialog {
 
         producto.setEditable(false);
         producto.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        producto.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                teclar(evt);
+            }
+        });
         jPanel2.add(producto, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 190, 510, 40));
 
         titulo.setFont(new java.awt.Font("Arial", 1, 36)); // NOI18N
@@ -71,10 +80,20 @@ public class Precio_confirmacion extends javax.swing.JDialog {
         jPanel2.add(titulo_precio, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 250, -1, -1));
 
         precio.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        precio.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                teclar(evt);
+            }
+        });
         jPanel2.add(precio, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 240, 190, 40));
 
         und.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         und.setText("1");
+        und.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                teclar(evt);
+            }
+        });
         jPanel2.add(und, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 240, 60, 40));
 
         titulo_und.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
@@ -87,13 +106,23 @@ public class Precio_confirmacion extends javax.swing.JDialog {
 
         descuento.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         descuento.setText("0");
+        descuento.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                teclar(evt);
+            }
+        });
         jPanel2.add(descuento, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 240, 60, 40));
 
         agregarproducto_facturar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/add.png"))); // NOI18N
-        agregarproducto_facturar.setText(" Agregar producto");
+        agregarproducto_facturar.setText(" Agregar producto (ENTER)");
         agregarproducto_facturar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 agregarProducto(evt);
+            }
+        });
+        agregarproducto_facturar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                teclar(evt);
             }
         });
         jPanel2.add(agregarproducto_facturar, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, 290, 50));
@@ -104,15 +133,13 @@ public class Precio_confirmacion extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void agregarProducto(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarProducto
-        int can = Integer.parseInt(this.und.getText());
-        int pre = Integer.parseInt(this.precio.getText());
-        double tot = Double.parseDouble(vf.total_facturar.getText());
-        if(can < stock){
+        int can = Integer.parseInt(this.und.getText().toString());
+        double pre = Double.parseDouble(this.precio.getText().toString());
+        if(can <= stock){
             if(can >= 0){
-                CalculosMatematicos calcular = new CalculosMatematicos();
-                String total = String.valueOf(calcular.sacarSuma(tot,(calcular.sacarTotal(can,pre))));
-                vf.total_facturar.setText(total);
-                agregarFila(can,tot);
+                double preTotal = calcular.sacarTotal(can,pre);
+                vf.c.sumarTotal(preTotal);
+                agregarFila(can,preTotal);
                 this.dispose();
                 vpro.dispose();
             }else{
@@ -123,6 +150,18 @@ public class Precio_confirmacion extends javax.swing.JDialog {
             "la cantidad solicitada");
         }
     }//GEN-LAST:event_agregarProducto
+
+    private void teclar(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_teclar
+       char t = evt.getKeyChar();
+       switch(t){
+           case KeyEvent.VK_ENTER:
+               this.agregarproducto_facturar.doClick();
+               break;
+           case KeyEvent.VK_ESCAPE:
+               this.dispose();
+               break;
+       }
+    }//GEN-LAST:event_teclar
     
     public void agregarFila(int can, double total){
         DefaultTableModel tabla = (DefaultTableModel) vf.tablaproducto_facturar.getModel();
@@ -133,21 +172,6 @@ public class Precio_confirmacion extends javax.swing.JDialog {
         fila[3] = String.valueOf(this.precio.getText());
         fila[4] = String.valueOf(total);
         tabla.addRow(fila);
-    }
-    
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                Precio_confirmacion dialog = new Precio_confirmacion(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

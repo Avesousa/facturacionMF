@@ -4,6 +4,8 @@ import static Clases.Conexion.establecerConexion;
 import Clases.Usuario;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,13 +14,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
-public class Inicio extends javax.swing.JFrame {
+public class Inicio extends javax.swing.JFrame{
     public String usuarioR;
     public String claveR;
     public Inicio() {
         initComponents();
         this.setLocationRelativeTo(null);
         this.boton_ingresar.setEnabled(false);
+        this.usuario.requestFocus();
     }
     
     public Image getIconImage(){
@@ -40,9 +43,10 @@ public class Inicio extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setIconImage(getIconImage());
-        setMinimumSize(new java.awt.Dimension(950, 600));
+        setMinimumSize(new java.awt.Dimension(767, 569));
         setUndecorated(true);
-        setPreferredSize(new java.awt.Dimension(950, 600));
+        setPreferredSize(new java.awt.Dimension(767, 569));
+        setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         boton_ingresar.setBackground(new java.awt.Color(30, 45, 59));
@@ -84,8 +88,10 @@ public class Inicio extends javax.swing.JFrame {
         usuario.setBackground(new java.awt.Color(30, 45, 59));
         usuario.setFont(new java.awt.Font("Lucida Grande", 0, 24)); // NOI18N
         usuario.setForeground(new java.awt.Color(255, 255, 255));
-        usuario.setText("Avesousa");
         usuario.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                teclar(evt);
+            }
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 usuarioKeyReleased(evt);
             }
@@ -96,6 +102,9 @@ public class Inicio extends javax.swing.JFrame {
         clave.setForeground(new java.awt.Color(255, 255, 255));
         clave.setText("26390042");
         clave.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                teclar(evt);
+            }
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 claveKeyReleased(evt);
             }
@@ -138,6 +147,15 @@ public class Inicio extends javax.swing.JFrame {
             this.boton_ingresar.setEnabled(false);
         }
     }//GEN-LAST:event_claveKeyReleased
+
+    private void teclar(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_teclar
+        char t = evt.getKeyChar();
+        if(t==KeyEvent.VK_ENTER){
+            this.boton_ingresar.doClick();
+        }else if(t==KeyEvent.VK_ESCAPE){
+            this.boton_cerrar.doClick();
+        }
+    }//GEN-LAST:event_teclar
     public void setVacios(String valor){
         this.usuario.setText(valor);
         this.clave.setText(valor);
@@ -161,4 +179,7 @@ public class Inicio extends javax.swing.JFrame {
     private javax.swing.JLabel titulo_usuario;
     public static javax.swing.JTextField usuario;
     // End of variables declaration//GEN-END:variables
+
+ 
+    //SET GLOBAL time_zone = '-3:00';
 }

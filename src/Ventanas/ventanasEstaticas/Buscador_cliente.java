@@ -39,6 +39,9 @@ public class Buscador_cliente extends javax.swing.JFrame {
         editar_buscador = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(916, 504));
+        setPreferredSize(new java.awt.Dimension(916, 504));
+        setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         buscar_buscador.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/search.png"))); // NOI18N
@@ -121,10 +124,8 @@ public class Buscador_cliente extends javax.swing.JFrame {
     private void seleccionarCliente(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_seleccionarCliente
         int fila = this.tabla_buscador.getSelectedRow();
         if(fila != -1){
-            v.documento_facturar.setText(this.tabla_buscador.getValueAt(fila,0).toString());
-            v.razonsocial_facturar.setText(this.tabla_buscador.getValueAt(fila,1).toString());
-            v.telefono_facturar.setText(this.tabla_buscador.getValueAt(fila,2).toString());
-            v.direccion_facturar.setText(this.tabla_buscador.getValueAt(fila,3).toString());
+            Conexion coCliente = new Conexion();
+            coCliente.seleccionar_cliente(Integer.parseInt(this.tabla_buscador.getValueAt(fila, 0).toString()), v, tabla);
             this.dispose();
         } else {
             JOptionPane.showMessageDialog(null, "No haz seleccionado ningún cliente...");

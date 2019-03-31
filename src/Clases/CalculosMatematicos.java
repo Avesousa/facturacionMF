@@ -23,4 +23,8 @@ public class CalculosMatematicos {
     public double sacarSuma(double numero, double numerodos){
         return numero + numerodos;
     }
+    
+    public double sacarResta(double numero, double numerodos){
+        return numero - numerodos;
+    }
 }

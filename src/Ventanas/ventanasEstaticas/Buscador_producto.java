@@ -3,6 +3,7 @@ package Ventanas.ventanasEstaticas;
 
 import Clases.Conexion;
 import Clases.Usuario;
+import com.sun.glass.events.KeyEvent;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
@@ -20,6 +21,7 @@ public class Buscador_producto extends javax.swing.JFrame {
         this.traerProductos();
         u = user;
         v = ventana;
+        this.tabla_buscador.requestFocus();
     }
    
     public void traerProductos(){
@@ -39,17 +41,26 @@ public class Buscador_producto extends javax.swing.JFrame {
         seleccionar_buscador = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(935, 509));
+        setPreferredSize(new java.awt.Dimension(935, 509));
+        setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         buscar_buscador.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/search.png"))); // NOI18N
         buscar_buscador.setText(" BUSCAR PRODUCTO");
         buscar_buscador.setToolTipText("");
         buscar_buscador.setPreferredSize(new java.awt.Dimension(210, 50));
+        buscar_buscador.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                teclar(evt);
+            }
+        });
         getContentPane().add(buscar_buscador, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 40, 210, 50));
 
         razonsocial_buscador.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 buscar(evt);
+                teclar(evt);
             }
         });
         getContentPane().add(razonsocial_buscador, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 40, 650, 50));
@@ -58,6 +69,7 @@ public class Buscador_producto extends javax.swing.JFrame {
         razonsocial_titulo_facturar1.setText("PRODUCTO, CATEGORIA O CÓDIGO");
         getContentPane().add(razonsocial_titulo_facturar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 20, -1, -1));
 
+        tabla_buscador.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         tabla_buscador.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -67,11 +79,23 @@ public class Buscador_producto extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Object.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tabla_buscador.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                teclar(evt);
             }
         });
         scroll_buscador.setViewportView(tabla_buscador);
@@ -93,7 +117,7 @@ public class Buscador_producto extends javax.swing.JFrame {
         getContentPane().add(scroll_buscador, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 100, 860, 300));
 
         seleccionar_buscador.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/checked.png"))); // NOI18N
-        seleccionar_buscador.setText(" Seleccionar producto");
+        seleccionar_buscador.setText(" Seleccionar producto (ENTER)");
         seleccionar_buscador.setToolTipText("");
         seleccionar_buscador.setPreferredSize(new java.awt.Dimension(210, 50));
         seleccionar_buscador.addActionListener(new java.awt.event.ActionListener() {
@@ -101,7 +125,12 @@ public class Buscador_producto extends javax.swing.JFrame {
                 seleccionarProducto(evt);
             }
         });
-        getContentPane().add(seleccionar_buscador, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 410, 210, 50));
+        seleccionar_buscador.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                teclar(evt);
+            }
+        });
+        getContentPane().add(seleccionar_buscador, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 410, 250, 50));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -113,17 +142,30 @@ public class Buscador_producto extends javax.swing.JFrame {
     private void seleccionarProducto(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_seleccionarProducto
         int fila = this.tabla_buscador.getSelectedRow();
         if(fila != -1){
-            Precio_confirmacion pc = new Precio_confirmacion(this,true,v,u,this);
-            pc.producto.setText(this.tabla_buscador.getValueAt(fila,2).toString());
-            pc.precio.setText(this.tabla_buscador.getValueAt(fila,4).toString());
-            pc.codigo = Integer.parseInt(this.tabla_buscador.getValueAt(fila,0).toString());
-            pc.categoria = this.tabla_buscador.getValueAt(fila,1).toString();
-            pc.stock = Integer.parseInt(this.tabla_buscador.getValueAt(fila,3).toString());
-            pc.setVisible(true);
+            if(Integer.parseInt(this.tabla_buscador.getValueAt(fila, 3).toString()) > 0){
+                Precio_confirmacion pc = new Precio_confirmacion(this,true,v,u,this);
+                pc.setLocationRelativeTo(null);
+                pc.producto.setText(this.tabla_buscador.getValueAt(fila,2).toString());
+                pc.precio.setText(this.tabla_buscador.getValueAt(fila,4).toString());
+                pc.codigo = Integer.parseInt(this.tabla_buscador.getValueAt(fila,0).toString());
+                pc.categoria = this.tabla_buscador.getValueAt(fila,1).toString();
+                pc.stock = Integer.parseInt(this.tabla_buscador.getValueAt(fila,3).toString());
+                pc.setVisible(true);
+            }else{
+            JOptionPane.showMessageDialog(null, "No hay disponible en inventario");
+            }
+            
         } else {
             JOptionPane.showMessageDialog(null, "No haz seleccionado ningún producto");
         }
     }//GEN-LAST:event_seleccionarProducto
+
+    private void teclar(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_teclar
+        char t = evt.getKeyChar();
+        if(t==KeyEvent.VK_ENTER){
+            this.seleccionar_buscador.doClick();
+        }
+    }//GEN-LAST:event_teclar
   
     private void filtro(String consulta){
         tabla = (DefaultTableModel) this.tabla_buscador.getModel();

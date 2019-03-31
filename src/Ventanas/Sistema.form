@@ -68,14 +68,6 @@
                 <Property name="text" type="java.lang.String" value="Devoluci&#xf3;n"/>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="facturar_facturas_sistema1">
-              <Properties>
-                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                  <KeyStroke key="Ctrl+N"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Facturar"/>
-              </Properties>
-            </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="producto_sistema">
@@ -95,30 +87,6 @@
                   <KeyStroke key="Ctrl+L"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Listas de Productos"/>
-              </Properties>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="agregar_producto_sistema">
-              <Properties>
-                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                  <KeyStroke key="Shift+Ctrl+A"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Agregar Producto"/>
-              </Properties>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="modificar_producto_sistema">
-              <Properties>
-                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                  <KeyStroke key="Shift+Ctrl+M"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Modificar Producto"/>
-              </Properties>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="eliminar_producto_sistema">
-              <Properties>
-                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                  <KeyStroke key="Shift+Ctrl+E"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Eliminar Producto"/>
               </Properties>
             </MenuItem>
           </SubComponents>
