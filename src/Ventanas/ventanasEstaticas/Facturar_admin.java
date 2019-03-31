@@ -293,9 +293,9 @@ public class Facturar_admin extends javax.swing.JFrame {
     }//GEN-LAST:event_eliminarproducto_facturarActionPerformed
 
     private void facturar_facturarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_facturar_facturarActionPerformed
-        this.reporte();
-        this.enviarReporte();
-        this.limpieza();
+        reporte();
+        enviarReporte();
+        limpieza();
     }//GEN-LAST:event_facturar_facturarActionPerformed
     
     private void reporte(){
@@ -314,9 +314,9 @@ public class Facturar_admin extends javax.swing.JFrame {
             Map parametro = new HashMap();
             parametro.put("totalfactura", this.total_facturar.getText());
             parametro.put("nombre", c.razon);
-            parametro.put("documento",(int)c.documento);
+            parametro.put("documento",String.valueOf(c.documento));
             parametro.put("direccion",c.direccion);
-            parametro.put("telefono",(int)c.telefono);
+            parametro.put("telefono",String.valueOf(c.telefono));
             //Relacionado a la vista previa
             JasperReport reporte = (JasperReport) JRLoader.loadObject("factura.jasper");
             JasperPrint imprimir = JasperFillManager.fillReport(reporte,parametro,lista);
@@ -328,7 +328,7 @@ public class Facturar_admin extends javax.swing.JFrame {
     
     private void enviarReporte(){
         Conexion con = new Conexion();
-        con.enviarDetalle(tabla, u, c, this);
+        con.enviarDetalle(u, c, this);
     }
     
     private void limpieza(){

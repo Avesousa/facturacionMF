@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
@@ -72,7 +73,7 @@ public class Conexion {
             System.out.println("Entro acá");
             System.out.println(e);
         } finally{
-            cerrarConexion();
+            //cerrarConexion();
         }
         
         this.conectador.close();
@@ -93,7 +94,7 @@ public class Conexion {
         catch(Exception e){
             System.out.println(e);
         }finally{
-            cerrarConexion();
+            //cerrarConexion();
         }
         
     }
@@ -116,7 +117,7 @@ public class Conexion {
        catch(Exception e){
            System.out.println(e);
        }finally{
-           cerrarConexion();
+           //cerrarConexion();
        } 
     }
     public void crear_clientes(Formulario_cliente v, Facturar_admin vf, Buscador_cliente vb){
@@ -141,7 +142,7 @@ public class Conexion {
         }catch(Exception e){
             System.out.println(e);
         }finally{
-           cerrarConexion();
+           //cerrarConexion();
        } 
     }
     public void seleccionar_cliente(int documento, Facturar_admin v, DefaultTableModel t){
@@ -170,7 +171,7 @@ public class Conexion {
         } catch (Exception e) {
             System.out.println(e);
         } finally{
-            cerrarConexion();
+            //cerrarConexion();
         }
     }
     private boolean verificarClientes(int d){
@@ -183,7 +184,7 @@ public class Conexion {
             System.out.println(e);
             return false;
         }finally{
-           cerrarConexion();
+           //cerrarConexion();
        } 
     }
     private void cerrarConexion(){
@@ -229,12 +230,14 @@ public class Conexion {
         }
         return 0;
     }
-    public void enviarDetalle(DefaultTableModel t, Usuario u, Cliente c, Facturar_admin v){
+    public void enviarDetalle(Usuario u, Cliente c, Facturar_admin v){
         try {
             id_usuario = u.getId_usuario();
             id_cliente = c.id_cliente;
+            JTable t = v.tablaproducto_facturar;
             String sql = "INSERT INTO detalleventa values (null,?,?,?,?,?,?,?,?)";
             this.ps = this.conectador.prepareStatement(sql);
+            System.out.println(t.getRowCount());
             int cantFilas = t.getRowCount();
             int id_factura = enviarFactura(v);
             for(int i = 0; i<cantFilas; i++){
@@ -262,13 +265,15 @@ public class Conexion {
             Date hoy = new Date();
             DateFormat formato = new SimpleDateFormat("yyyy/mm/dd HH:mm:ss");
             String fecha = formato.format(hoy);
-            String sql = "'INSER INT factura values (null,"+
-                    Integer.parseInt(v.total_facturar.getText())+
-                    ","+fecha+","+id_usuario+","+id_cliente+")'";
+            String sql = "INSERT INTO factura(total_factura, fecha_factura, id_usuario,"+
+                    "id_cliente) VALUES ("+Double.parseDouble(v.total_facturar.getText())+
+                    ","+fecha+","+id_usuario+","+id_cliente+")";
             this.ps = this.conectador.prepareStatement(sql);
             this.ps.executeUpdate();
             this.resultado = this.ps.getGeneratedKeys(); 
+            System.out.println("Termino de enviar factura");
             return this.resultado.getInt(1);
+            
     }
     
 }
