@@ -27,6 +27,7 @@ public class Precio_confirmacion extends javax.swing.JDialog {
     public int codigo;
     public String categoria;
     public int stock;
+    public int porcentaje;
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -44,6 +45,7 @@ public class Precio_confirmacion extends javax.swing.JDialog {
         titulo_descuento = new javax.swing.JLabel();
         descuento = new javax.swing.JTextField();
         agregarproducto_facturar = new javax.swing.JButton();
+        precio_final = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -84,6 +86,9 @@ public class Precio_confirmacion extends javax.swing.JDialog {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 teclar(evt);
             }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                calcularMonto(evt);
+            }
         });
         jPanel2.add(precio, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 240, 190, 40));
 
@@ -92,6 +97,9 @@ public class Precio_confirmacion extends javax.swing.JDialog {
         und.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 teclar(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                calcularMonto(evt);
             }
         });
         jPanel2.add(und, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 240, 60, 40));
@@ -109,6 +117,11 @@ public class Precio_confirmacion extends javax.swing.JDialog {
         descuento.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 teclar(evt);
+                calcularPorcentaje(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                calcularPorcentaje(evt);
+                calcularMonto(evt);
             }
         });
         jPanel2.add(descuento, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 240, 60, 40));
@@ -127,21 +140,32 @@ public class Precio_confirmacion extends javax.swing.JDialog {
         });
         jPanel2.add(agregarproducto_facturar, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, 290, 50));
 
+        precio_final.setEditable(false);
+        precio_final.setBackground(new java.awt.Color(255, 255, 255));
+        precio_final.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
+        precio_final.setForeground(new java.awt.Color(0, 204, 102));
+        precio_final.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        precio_final.setText("0.0");
+        jPanel2.add(precio_final, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 310, 100, 40));
+
         getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void agregarProducto(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarProducto
-        int can = Integer.parseInt(this.und.getText().toString());
-        double pre = Double.parseDouble(this.precio.getText().toString());
+        int can = Integer.parseInt(this.und.getText());
+        double pre = Double.parseDouble(this.precio.getText());
         if(can <= stock){
             if(can >= 0){
-                double preTotal = calcular.sacarTotal(can,pre);
-                vf.c.sumarTotal(preTotal);
-                agregarFila(can,preTotal);
-                this.dispose();
-                vpro.dispose();
+                    double preTotal = calcular.sacarTotal(can,pre);
+                    calcular.esperar(1);
+                    vf.c.sumarTotal(preTotal);
+                    agregarFila(can,preTotal);
+                    Conexion con = new Conexion();
+                    con.tocarStock(this.codigo,(stock-can));
+                    this.dispose();
+                    vpro.dispose();
             }else{
                 JOptionPane.showMessageDialog(null, "No haz ingresado cantidad");
             }
@@ -162,6 +186,34 @@ public class Precio_confirmacion extends javax.swing.JDialog {
                break;
        }
     }//GEN-LAST:event_teclar
+
+    private void calcularPorcentaje(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_calcularPorcentaje
+    int por = Integer.parseInt(this.descuento.getText());
+        if(por <= porcentaje){
+            int porF = porcentaje - por;
+            double costoN = calcular.sacarCosto(codigo);
+            System.out.println(por);
+            System.out.println(porcentaje);
+            System.out.println("----");
+            System.out.println(porF);
+            System.out.println("====");
+            System.out.println(costoN);
+            System.out.println("----FINAL----");
+            double precioN = calcular.sacarPrecio(costoN, porF);
+            this.precio.setText(String.valueOf(precioN));
+        } else{
+            JOptionPane.showMessageDialog(null, "¡El descuento agregado, no está permitido!");
+            this.descuento.setText("0");
+        }        
+    }//GEN-LAST:event_calcularPorcentaje
+
+    private void calcularMonto(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_calcularMonto
+        int can = Integer.parseInt(this.und.getText());
+        double pre = Double.parseDouble(this.precio.getText());
+        double preTotal = calcular.sacarTotal(can,pre);
+        calcular.esperar(0.5);
+        this.precio_final.setText(String.valueOf(preTotal));
+    }//GEN-LAST:event_calcularMonto
     
     public void agregarFila(int can, double total){
         DefaultTableModel tabla = (DefaultTableModel) vf.tablaproducto_facturar.getModel();
@@ -181,6 +233,7 @@ public class Precio_confirmacion extends javax.swing.JDialog {
     private javax.swing.JLabel linea_titulo;
     private javax.swing.JLabel logo;
     public javax.swing.JTextField precio;
+    public javax.swing.JTextField precio_final;
     public javax.swing.JTextField producto;
     private javax.swing.JLabel titulo;
     private javax.swing.JLabel titulo_descuento;

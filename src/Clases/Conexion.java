@@ -9,14 +9,15 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 public class Conexion {
@@ -33,7 +34,6 @@ public class Conexion {
     private PreparedStatement ps;
     private CalculosMatematicos calcular = new CalculosMatematicos();
     public Conexion() {
-        System.out.println("comenzo en el constructor");
         this.conectador = establecerConexion();
     }
     
@@ -46,8 +46,7 @@ public class Conexion {
             conexion = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             
         } catch(Exception e){
-            JOptionPane.showMessageDialog(null, "No se ha podido conectar a la base de dato ");
-            System.out.println(e);
+            JOptionPane.showMessageDialog(null, "No se ha podido conectar a la base de dato: " + e);
         }
         return conexion;
     }
@@ -70,8 +69,7 @@ public class Conexion {
            }
            
         } catch (Exception e) {
-            System.out.println("Entro acá");
-            System.out.println(e);
+            JOptionPane.showMessageDialog(null,"Ha ocurrido un error en conectar_usuario " +  e);
         } finally{
             //cerrarConexion();
         }
@@ -92,7 +90,7 @@ public class Conexion {
             }
         }
         catch(Exception e){
-            System.out.println(e);
+            JOptionPane.showMessageDialog(null,"Ha ocurrido un error en Traer_clientes " +  e);
         }finally{
             //cerrarConexion();
         }
@@ -115,7 +113,7 @@ public class Conexion {
            
        }   
        catch(Exception e){
-           System.out.println(e);
+           JOptionPane.showMessageDialog(null,"Ha ocurrido un error en Editar_clientes " +  e);
        }finally{
            //cerrarConexion();
        } 
@@ -140,20 +138,17 @@ public class Conexion {
                 JOptionPane.showMessageDialog(null, "El cliente que intentas agregar, ¡Ya existe!");
             }
         }catch(Exception e){
-            System.out.println(e);
+            JOptionPane.showMessageDialog(null,"Ha ocurrido un error en Crear_clientes " +  e);
         }finally{
            //cerrarConexion();
        } 
     }
     public void seleccionar_cliente(int documento, Facturar_admin v, DefaultTableModel t){
-        System.out.println("Acá estoy");
         try {
             String sql = "SELECT * FROM clientes WHERE documento_cliente="+documento;
             this.ps = this.conectador.prepareStatement(sql);
             this.resultado = this.ps.executeQuery();
-            System.out.println("Comenzo a buscar usuario por dni");
             if(this.resultado.next()){
-                System.out.println("Entro en next");
                 String razon = this.resultado.getString("razonsocial");
                 String direccion_cliente = this.resultado.getString("direccion_cliente");
                 int documento_cliente = Integer.parseInt(this.resultado.getString("documento_cliente"));
@@ -169,7 +164,7 @@ public class Conexion {
             }
             
         } catch (Exception e) {
-            System.out.println(e);
+            JOptionPane.showMessageDialog(null,"Ha ocurrido un error en Seleccionar_clientes " +  e);
         } finally{
             //cerrarConexion();
         }
@@ -178,10 +173,9 @@ public class Conexion {
         try{
             this.ps = this.conectador.prepareStatement("SELECT * FROM clientes WHERE documento_cliente='" + d + "'");
             this.resultado = this.ps.executeQuery();
-            System.out.println(this.resultado.next());
             return this.resultado.next();
         }catch(Exception e){
-            System.out.println(e);
+            JOptionPane.showMessageDialog(null,"Ha ocurrido un error en VerificarClientes " +  e);;
             return false;
         }finally{
            //cerrarConexion();
@@ -193,13 +187,21 @@ public class Conexion {
         try { this.conectador.close(); } catch (Exception e) { /* ignored */ }
 
     }
-    public void traer_productos(DefaultTableModel tabla){
+    public void traer_productos(DefaultTableModel tabla, int tipo){
         Object [] fila = null;
-        try{
-            String sql = "SELECT id_producto, nombre_categoria, nombre_producto,"+
+        String sql;
+        if(tipo == 1){
+            sql = "SELECT id_producto, nombre_categoria, nombre_producto,"+
                 "cantidad_producto, precio_producto FROM productos\n" +
                 "INNER JOIN categorias\n" +
                 "ON categorias.id_categoria = productos.id_categoria;";
+        } else {
+            sql = "SELECT id_producto, nombre_categoria, nombre_producto,"+
+                "cantidad_producto, costo_producto FROM productos\n" +
+                "INNER JOIN categorias\n" +
+                "ON categorias.id_categoria = productos.id_categoria;";
+        }
+        try{
             this.ps = this.conectador.prepareStatement(sql);
             this.resultado = this.ps.executeQuery();
             while(this.resultado.next()){
@@ -211,7 +213,7 @@ public class Conexion {
             }
         }
         catch(Exception e){
-            System.out.println(e);
+            JOptionPane.showMessageDialog(null,"Ha ocurrido un error en Traer_Productos " +  e);
         }finally{
             //cerrarConexion();
         }
@@ -219,14 +221,14 @@ public class Conexion {
     }
     public double traer_costo(int codigo){
         try{
-            this.ps = this.conectador.prepareStatement("SELECT * FROM productos"+ 
-                "WHERE id_producto='"+codigo+"'");
+            String sql = "SELECT * FROM productos WHERE id_producto="+codigo+";";
+            this.ps = this.conectador.prepareStatement(sql);
             this.resultado = this.ps.executeQuery();
             if(this.resultado.next()){
                 return Double.parseDouble(this.resultado.getString("costo_producto"));
             }
         }catch(Exception e){
-            System.out.println(e);
+            JOptionPane.showMessageDialog(null, "Ha ocurrido un error en: Traer_costo " + e);
         }
         return 0;
     }
@@ -235,45 +237,102 @@ public class Conexion {
             id_usuario = u.getId_usuario();
             id_cliente = c.id_cliente;
             JTable t = v.tablaproducto_facturar;
-            String sql = "INSERT INTO detalleventa values (null,?,?,?,?,?,?,?,?)";
-            this.ps = this.conectador.prepareStatement(sql);
-            System.out.println(t.getRowCount());
             int cantFilas = t.getRowCount();
             int id_factura = enviarFactura(v);
-            for(int i = 0; i<cantFilas; i++){
-                int cod = Integer.parseInt(t.getValueAt(i, 0).toString());
-                double costo = calcular.sacarCosto(cod);
-                double precio =Double.parseDouble(t.getValueAt(i, 3).toString());
-                double precioTotal = Double.parseDouble(v.total_facturar.getText());
-                int markup = calcular.sacarMakup(precio, costo);
-                double rentabilidad = calcular.sacarRentabilidad(precio, precioTotal);
-                this.ps.setInt(1,id_factura);
-                this.ps.setInt(2, cod);
-                this.ps.setInt(3, Integer.parseInt(String.valueOf(precio)));
-                this.ps.setInt(4, Integer.parseInt(t.getValueAt(i, 1).toString()));
-                this.ps.setInt(5, markup);
-                this.ps.setInt(6,Integer.parseInt(String.valueOf(rentabilidad)));
-                this.ps.addBatch();
+            if(id_factura != 0){
+                for(int i = 0; i<cantFilas; i++){
+                    int cod = Integer.parseInt(t.getValueAt(i, 0).toString());
+                    double costo = traer_costo(cod);
+                    double precio =Double.parseDouble(t.getValueAt(i, 3).toString());
+                    double precioTotal = Double.parseDouble(v.total_facturar.getText());
+                    int cant = Integer.parseInt(t.getValueAt(i, 1).toString());
+                    int markup = calcular.sacarMakup(precio, costo);
+                    double rentabilidad = calcular.sacarRentabilidad(costo, precio, cant);
+                    String sql = "INSERT INTO detalleventa (id_factura,id_producto,precio_detalle,"+
+                            "cantidad_detalle,markup_detalle,rentabilidad_detalle)"
+                            + "values ("+id_factura+","+cod+","+precio+
+                            ","+cant+","+markup+","+rentabilidad+")";
+                    this.ps = this.conectador.prepareStatement(sql);
+                    this.ps.executeUpdate();
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "No se ha podido agregar la factura, correctamente.");
             }
-            this.ps.executeBatch();
+            
             
         } catch (SQLException ex) {
             Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    public void tocarStock(int cod, int cant){
+        try {
+            String sql = "UPDATE productos SET cantidad_producto ="+
+                cant+" WHERE id_producto = " + cod;
+            this.ps = this.conectador.prepareStatement(sql);
+            this.ps.executeUpdate();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Ha ocurrido un error en tocarStock " + e);
+        }
+                
+    }
+    public void buscarStock(int cod, int cant){
+        int valor;
+        try {
+            String sql = "SELECT * FROM productos WHERE id_producto = " + cod;
+        this.ps = this.conectador.prepareStatement(sql);
+        this.resultado = this.ps.executeQuery();
+        if(this.resultado.next()){
+            valor = this.resultado.getInt("cantidad_producto");
+            tocarStock(cod,(valor+cant));
+        }    
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null,"Ha ocurrido un error en BuscarStock" + e);
+        }
+        
+    }
     private int enviarFactura(Facturar_admin v) throws SQLException{
             Date hoy = new Date();
-            DateFormat formato = new SimpleDateFormat("yyyy/mm/dd HH:mm:ss");
+            DateFormat formato = new SimpleDateFormat("yyyy/mm/dd");
             String fecha = formato.format(hoy);
             String sql = "INSERT INTO factura(total_factura, fecha_factura, id_usuario,"+
                     "id_cliente) VALUES ("+Double.parseDouble(v.total_facturar.getText())+
                     ","+fecha+","+id_usuario+","+id_cliente+")";
-            this.ps = this.conectador.prepareStatement(sql);
+            this.ps = this.conectador.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
             this.ps.executeUpdate();
             this.resultado = this.ps.getGeneratedKeys(); 
-            System.out.println("Termino de enviar factura");
-            return this.resultado.getInt(1);
+            if(this.resultado.next()){
+                return this.resultado.getInt(1);
+            }
+            return 0;
+            
             
     }
-    
+    public int traerPorcentaje(String categoria){
+        try {
+            String sql = "SELECT * FROM categorias WHERE nombre_categoria = '" + categoria + "'";
+            this.ps = this.conectador.prepareStatement(sql);
+            this.resultado = this.ps.executeQuery();
+            if(this.resultado.next()){
+                return this.resultado.getInt("porcentaje_categoria");
+            }
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "No se ha podido conectar en TraerPorcentaje: " + e);
+            
+        }
+        return 0;
+    }
+    public void traerCategorias( JComboBox seleccion){
+        String sql = "SELECT nombre_categoria FROM categorias";
+        seleccion.removeAllItems();
+        try {
+            this.ps = this.conectador.prepareStatement(sql);
+            this.resultado = this.ps.executeQuery();
+            while(this.resultado.next()){
+                seleccion.addItem(this.resultado.getString(1));
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "No ha podido agregar las categorias: \n" + e );
+        }
+    }
 }

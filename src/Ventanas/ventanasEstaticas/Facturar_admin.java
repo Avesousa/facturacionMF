@@ -7,7 +7,6 @@ import Clases.DatosDeFactura;
 import Clases.ListaDeDatos;
 import Clases.Usuario;
 import java.awt.Color;
-import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,13 +16,8 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.view.JasperViewer;
-import javax.servlet.ServletOutputStream;
-import net.sf.jasperreports.engine.JRExporter;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
 
 public class Facturar_admin extends javax.swing.JFrame {
     Usuario u;
@@ -178,7 +172,7 @@ public class Facturar_admin extends javax.swing.JFrame {
                 teclar(evt);
             }
         });
-        jPanel1.add(agregarproducto_facturar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 470, 190, 50));
+        jPanel1.add(agregarproducto_facturar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 470, 210, 50));
 
         eliminarproducto_facturar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/delete.png"))); // NOI18N
         eliminarproducto_facturar.setText(" Eliminar producto (E)");
@@ -192,7 +186,7 @@ public class Facturar_admin extends javax.swing.JFrame {
                 teclar(evt);
             }
         });
-        jPanel1.add(eliminarproducto_facturar, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 470, -1, 50));
+        jPanel1.add(eliminarproducto_facturar, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 470, -1, 50));
 
         facturar_facturar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/cash.png"))); // NOI18N
         facturar_facturar.setText("Imprimir (F)");
@@ -282,7 +276,11 @@ public class Facturar_admin extends javax.swing.JFrame {
         int fila = this.tablaproducto_facturar.getSelectedRow();
         if(fila != -1){
             if(rep == 0){ 
-                this.c.restarTotal(Double.parseDouble(this.total_facturar.getText()));
+                this.c.restarTotal(Double.parseDouble(this.tablaproducto_facturar.getValueAt(fila, 4).toString()));
+                Conexion con = new Conexion();
+                con.buscarStock(
+                        Integer.parseInt(this.tablaproducto_facturar.getValueAt(fila,0).toString()),
+                        Integer.parseInt(this.tablaproducto_facturar.getValueAt(fila,1).toString()));
                 tabla.removeRow(this.tablaproducto_facturar.getSelectedRow());
             }
         }else{
@@ -332,7 +330,10 @@ public class Facturar_admin extends javax.swing.JFrame {
     }
     
     private void limpieza(){
+        tabla = (DefaultTableModel) this.tablaproducto_facturar.getModel();
         c.borrarCliente();
+        tabla.setRowCount(0);
+        c.restarTotal(Double.parseDouble(this.total_facturar.getText()));
     }
     
     private void teclar(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_teclar

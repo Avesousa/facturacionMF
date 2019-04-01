@@ -13,6 +13,7 @@ public class Cliente {
     private double total = 0;
     private Facturar_admin v;
     private DefaultTableModel t;
+    private CalculosMatematicos cal;
 
     public Cliente(String razon, String direccion, int documento, int telefono,
     int id_cliente, Facturar_admin ve, DefaultTableModel ta) {
@@ -28,6 +29,7 @@ public class Cliente {
         v.telefono_facturar.setText(String.valueOf(this.telefono));
         v.direccion_facturar.setText(this.direccion);
         v.crearCliente(this);
+        cal = new CalculosMatematicos();
     }
     
     public void borrarCliente(){
@@ -45,12 +47,12 @@ public class Cliente {
     }
     
     public void sumarTotal(double precio){
-        total += precio;
+        total = cal.sacarSuma(total,precio);
         v.total_facturar.setText(String.valueOf(total));
     }
     
     public void restarTotal(double precio){
-        total -= precio;
+        total = cal.sacarResta(total, precio);
         v.total_facturar.setText(String.valueOf(total));
     }
 }

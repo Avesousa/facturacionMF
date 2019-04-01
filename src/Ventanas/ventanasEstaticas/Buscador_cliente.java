@@ -13,7 +13,6 @@ public class Buscador_cliente extends javax.swing.JFrame {
     DefaultTableModel tabla;
     
     public Buscador_cliente(Facturar_admin ventana) {
-        System.out.println("Buscar cliente");
         initComponents();
         this.setLocationRelativeTo(null);
         this.traerClientes();

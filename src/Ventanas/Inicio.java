@@ -1,18 +1,8 @@
 package Ventanas;
 import Clases.Conexion;
-import static Clases.Conexion.establecerConexion;
-import Clases.Usuario;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 
 public class Inicio extends javax.swing.JFrame{
     public String usuarioR;

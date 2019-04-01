@@ -1,9 +1,5 @@
 package Clases;
 
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRField;
-
 public class DatosDeFactura{
     
     private String cod;
